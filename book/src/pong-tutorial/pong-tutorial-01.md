@@ -36,6 +36,7 @@ You can delete everything in that file, then add these imports:
 
 ```rust,ignore
 //! Pong Tutorial 1
+extern crate amethyst;
 
 use amethyst::{
     prelude::*,
@@ -60,6 +61,19 @@ working on defining our game code.
 Now we create our core game struct:
 
 ```rust,edition2018,no_run,noplaypen
+# //! Pong Tutorial 1
+# extern crate amethyst;
+#
+# use amethyst::{
+#     prelude::*,
+#     renderer::{
+#         plugins::{RenderFlat2D, RenderToWindow},
+#         types::DefaultBackend,
+#         RenderingBundle,
+#     },
+#     utils::application_root_dir,
+# };
+#
 pub struct Pong;
 ```
 
@@ -67,6 +81,21 @@ We'll be implementing the [`SimpleState`][simplestate] trait on this struct, whi
 used by Amethyst's state machine to start, stop, and update the game.
 
 ```rust,ignore
+# //! Pong Tutorial 1
+# extern crate amethyst;
+#
+# use amethyst::{
+#     prelude::*,
+#     renderer::{
+#         plugins::{RenderFlat2D, RenderToWindow},
+#         types::DefaultBackend,
+#         RenderingBundle,
+#     },
+#     utils::application_root_dir,
+# };
+#
+# pub struct Pong;
+#
 impl SimpleState for Pong {}
 ```
 
@@ -80,8 +109,22 @@ started! We'll start with our `main()` function, and we'll have it return a
 if any errors occur during setup.
 
 ```rust,edition2018,no_run,noplaypen
+# //! Pong Tutorial 1
 # extern crate amethyst;
-# use amethyst::prelude::*;
+#
+# use amethyst::{
+#     prelude::*,
+#     renderer::{
+#         plugins::{RenderFlat2D, RenderToWindow},
+#         types::DefaultBackend,
+#         RenderingBundle,
+#     },
+#     utils::application_root_dir,
+# };
+#
+# pub struct Pong;
+#
+# impl SimpleState for Pong {}
 fn main() -> amethyst::Result<()> {
 
     // We'll put the rest of the code here.
@@ -102,10 +145,27 @@ Inside `main()` we first start the amethyst logger with a default `LoggerConfig`
 so we can see errors, warnings and debug messages while the program is running.
 
 ```rust,edition2018,no_run,noplaypen
+# //! Pong Tutorial 1
 # extern crate amethyst;
 #
-# fn main() {
-amethyst::start_logger(Default::default());
+# use amethyst::{
+#     prelude::*,
+#     renderer::{
+#         plugins::{RenderFlat2D, RenderToWindow},
+#         types::DefaultBackend,
+#         RenderingBundle,
+#     },
+#     utils::application_root_dir,
+# };
+#
+# pub struct Pong;
+#
+# impl SimpleState for Pong {}
+# fn main() -> amethyst::Result<()> {
+    amethyst::start_logger(Default::default());
+#    // We'll put the rest of the code here.
+#
+#    Ok(())
 # }
 ```
 
@@ -150,17 +210,28 @@ In `main()` in `main.rs`, we will prepare the path to a file containing
 the display configuration:
 
 ```rust,edition2018,no_run,noplaypen
+# //! Pong Tutorial 1
 # extern crate amethyst;
 #
 # use amethyst::{
+#     prelude::*,
+#     renderer::{
+#         plugins::{RenderFlat2D, RenderToWindow},
+#         types::DefaultBackend,
+#         RenderingBundle,
+#     },
 #     utils::application_root_dir,
-#     Error,
 # };
 #
-# fn main() -> Result<(), Error>{
-let app_root = application_root_dir()?;
-let display_config_path = app_root.join("config").join("display.ron");
-#     Ok(())
+# pub struct Pong;
+#
+# impl SimpleState for Pong {}
+# fn main() -> amethyst::Result<()> {
+#    amethyst::start_logger(Default::default());
+#    // We'll put the rest of the code here.
+    let app_root = application_root_dir()?;
+    let display_config_path = app_root.join("config").join("display.ron");
+#    Ok(())
 # }
 ```
 
@@ -169,20 +240,33 @@ let display_config_path = app_root.join("config").join("display.ron");
 In `main()` in `main.rs` we are going to add the basic application setup:
 
 ```rust,edition2018,no_run,noplaypen
+# //! Pong Tutorial 1
 # extern crate amethyst;
+#
 # use amethyst::{
 #     prelude::*,
+#     renderer::{
+#         plugins::{RenderFlat2D, RenderToWindow},
+#         types::DefaultBackend,
+#         RenderingBundle,
+#     },
 #     utils::application_root_dir,
 # };
-# fn main() -> Result<(), amethyst::Error> {
-# struct Pong; impl SimpleState for Pong {}
-let game_data = GameDataBuilder::default();
+#
+# pub struct Pong;
+#
+# impl SimpleState for Pong {}
+# fn main() -> amethyst::Result<()> {
+#    amethyst::start_logger(Default::default());
+#    // We'll put the rest of the code here.
+#    let app_root = application_root_dir()?;
+#    let display_config_path = app_root.join("config").join("display.ron");
+    let assets_dir = app_root.join("assets");
+    let game_data = GameDataBuilder::default();
 
-# let app_root = application_root_dir()?;
-let assets_dir = app_root.join("assets");
-let mut game = Application::new(assets_dir, Pong, game_data)?;
-game.run();
-#     Ok(())
+    let mut game = Application::new(assets_dir, Pong, game_data)?;
+    game.run();
+#    Ok(())
 # }
 ```
 
@@ -215,7 +299,9 @@ After preparing the display config and application scaffolding, it's time to act
 Last time we left our `GameDataBuilder` instance empty, now we'll add some systems to it.
 
 ```rust,edition2018,no_run,noplaypen
+# //! Pong Tutorial 1
 # extern crate amethyst;
+#
 # use amethyst::{
 #     prelude::*,
 #     renderer::{
@@ -225,23 +311,33 @@ Last time we left our `GameDataBuilder` instance empty, now we'll add some syste
 #     },
 #     utils::application_root_dir,
 # };
-# fn main() -> Result<(), amethyst::Error>{
-let app_root = application_root_dir()?;
-
-let display_config_path = app_root.join("config").join("display.ron");
-
-let game_data = GameDataBuilder::default()
-    .with_bundle(
+#
+# pub struct Pong;
+#
+# impl SimpleState for Pong {}
+# fn main() -> amethyst::Result<()> {
+#    amethyst::start_logger(Default::default());
+#    // We'll put the rest of the code here.
+#    let app_root = application_root_dir()?;
+#    let display_config_path = app_root.join("config").join("display.ron");
+#    let assets_dir = app_root.join("assets");
+    
+    let game_data = GameDataBuilder::default().with_bundle(
         RenderingBundle::<DefaultBackend>::new()
-            // The RenderToWindow plugin provides all the scaffolding for opening a window and drawing on it
+            // The RenderToWindow plugin provides all the scaffolding for opening a window and
+            // drawing on it
             .with_plugin(
                 RenderToWindow::from_config_path(display_config_path)?
                     .with_clear([0.0, 0.0, 0.0, 1.0]),
             )
-            // RenderFlat2D plugin is used to render entities with a `SpriteRender` component.
+            // RenderFlat2D plugin is used to render entities with `SpriteRender` component.
             .with_plugin(RenderFlat2D::default()),
     )?;
-# Ok(()) }
+
+#    let mut game = Application::new(assets_dir, Pong, game_data)?;
+#    game.run();
+#    Ok(())
+# }
 ```
 
 Here we are adding a `RenderingBundle`. Bundles are essentially sets of systems
